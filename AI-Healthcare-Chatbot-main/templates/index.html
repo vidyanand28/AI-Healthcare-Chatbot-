@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI Healthcare Chatbot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <style>
+      .logo-image {
+        width: 50px;
+        height: 50px;
+        border-radius: 30px;
+      }
+      .banner-image {
+        width: 100%;
+        max-width: 800px;
+        height: auto;
+        max-height: 500px;
+        object-fit: cover;
+        margin-top: 20px;
+      }
+
+      /* Default Light Mode */
+      body {
+        background-color: #ffffff;
+        color: #000000;
+      }
+      .navbar{
+        background-color: #d1e3f5;
+      }
+      /* Light mode specific navbar styles */
+      .navbar-light .navbar-nav .nav-link {
+        color: #ffffff !important; /* Force white color on navbar links */
+      }
+      .navbar-light .navbar-nav .nav-link:hover {
+        color: #d1e3f5 !important; /* Light blue on hover */
+      }
+      .navbar-light .navbar-brand {
+        color: #ffffff !important; /* Force white color on navbar brand */
+      }
+      .navbar-light .navbar-brand:hover {
+        color: #d1e3f5 !important; /* Light blue on hover */
+      }
+
+    
+      
+      /* Dark Mode Styles */
+      .dark-mode {
+        background-color: #121212;
+        color: #ffffff;
+      }
+
+      .dark-mode .navbar {
+        background-color: #3f73a8;
+        color: white;
+      }
+
+      .dark-mode .navbar .nav-link {
+        color: white;
+      }
+
+      .dark-mode .navbar .navbar-brand {
+        color: white;
+      }
+
+      .dark-mode .navbar .nav-link:hover {
+        color: #d1e3f5;
+      }
+
+      .dark-mode .container,
+      .dark-mode h1 {
+        background-color: #121212;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg ">
+      <div class="container-fluid">
+        <div>
+          <img class="logo-image" src="{{ url_for('static', filename='img.webp') }}" alt="Logo">
+        </div>
+        <a class="navbar-brand ms-2" href="#">AI Healthcare Chatbot</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/about">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/contact">Contact</a>
+            </li>
+            <button id="darkModeToggle" class="btn btn-outline-dark ms-3">Dark Mode</button>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Heading -->
+    <h1 class="text-center mt-4">AI Healthcare Chatbot</h1>
+
+    <!-- Big Image -->
+    <div class="container mt-4 d-flex justify-content-center">
+      <img class="banner-image rounded-4 shadow-lg" src="{{ url_for('static', filename='img3.jpg') }}" alt="Banner">
+    </div>
+
+        <!-- Symptom Form -->
+        <div class="container mt-4 my-4" style="background: rgb(133, 133, 218);color: white; border-radius: 20px;padding: 50px; ">
+          <form action="/predict" method="post">
+            <div class="form-group">
+              <label for="symptoms">Type Symptoms</label>
+              <input type="text" class="form-control" name="symptoms" placeholder="Enter your symptoms separated by comma...">
+            </div>
+            <br>
+    
+            <button class="btn" style="width: 100px; Background:rgb(241, 183, 217);padding : 20px ; margin-bottom: 10px; ">Submit</button>
+          </form>
+        </div>
+        <!--using jijna template to write python code in web-->
+        {% if submitted and predicted_disease %}
+        <h1 class="text-center mt-4 my-4">Final Results by AI Chatbot</h1>
+        <div class="container">
+          <div class="result-container">
+            <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#diseaseModal" style="padding: 4px; margin: 5px 40px 5px 0; font-size:20px;font-weight:bold;width:200px;border-radius:5px;background:#dcc91a"> Disease</button>
+            <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#precautionModal" style="padding: 4px; margin: 5px 40px 5px 0; font-size:20px;font-weight:bold;width:200px;border-radius:5px;background:#dcc91a"> Precautions</button>
+            <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#dietsModal" style="padding: 4px; margin: 5px 40px 5px 0; font-size:20px;font-weight:bold;width:200px;border-radius:5px;background:#dcc91a"> Diet</button>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Disease Modal -->
+<div class="modal fade" id="diseaseModal" tabindex="-1" aria-labelledby="diseaseModalLabel" aria-hidden="true" >
+  <div class="modal-dialog modal-dialog-centered" >
+    <div class="modal-content" style="border-radius: 20px;">
+      <div class="modal-header">
+        <h5 class="modal-title" id="diseaseModalLabel">Predicted Disease</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 20px; font-weight: bold;">{{ predicted_disease }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Precautions Modal -->
+<div class="modal fade" id="precautionModal" tabindex="-1" aria-labelledby="precautionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius: 20px;">
+      <div class="modal-header">
+        <h5 class="modal-title" id="precautionModalLabel">Recommended Precautions</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {% if dis_pre %}
+          <ul>
+            {% for row in dis_pre %}
+              {% for item in row %}
+                <li>{{ item }}</li>
+              {% endfor %}
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>No precautions available.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Diets Modal -->
+<div class="modal fade" id="dietsModal" tabindex="-1" aria-labelledby="dietsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header" style="background-color: #020606; color:white;">
+              <h5 class="modal-title" id="dietsModalLabel">Diets</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <ul>
+                  {% for i in dis_diet %}
+                      <li>{{ i }}</li>
+                  {% endfor %}
+              </ul>
+          </div>
+      </div>
+  </div>
+</div>
+
+    <!-- Dark Mode Script -->
+    <script>
+      const toggle = document.getElementById('darkModeToggle');
+
+      if (localStorage.getItem('darkMode') === 'enabled') { 
+        document.body.classList.add('dark-mode');
+        toggle.innerHTML = 'Light Mode';
+      }
+
+      toggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        if (document.body.classList.contains('dark-mode')) {
+          toggle.innerHTML = 'Light Mode';
+          localStorage.setItem('darkMode', 'enabled');
+        } else {
+          toggle.innerHTML = 'Dark Mode';
+          localStorage.setItem('darkMode', 'disabled');
+        }
+      });
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+
+  </body>
+</html> 
+ 
